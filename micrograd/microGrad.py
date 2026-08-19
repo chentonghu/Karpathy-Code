@@ -39,6 +39,15 @@ class Value:
 		out._backward = _backward
 		return out
 
+	def relu(self):
+		out = Value(0 if  self.data < 0 else self.data, (self,))
+
+		def _backward():
+			self.grad += (out.data > 0) * out.grad
+
+		out._backward = _backward
+		return out
+
 	def backward(self):
 		topo = []
 		visited = set()
@@ -55,9 +64,6 @@ class Value:
 		self.grad = 1.
 		for v in reversed(topo):
 			v._backward()
-
-
-
 
 	def __neg__(self):
 		return self * (-1)
